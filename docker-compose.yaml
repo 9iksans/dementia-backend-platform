@@ -1,0 +1,39 @@
+version: "3"
+services:
+  zookeeper:
+    container_name: 'zookeper-broker'
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    container_name: 'kafka-broker'
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9092:9092'
+      - '29092:29092'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: LISTENER_PRODUCER://kafka-broker:9092, LISTENER_CONTAINER://kafka-broker:29092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_PRODUCER://localhost:9092, LISTENER_CONTAINER://kafka-broker:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_PRODUCER:PLAINTEXT,LISTENER_CONTAINER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_CONTAINER
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+    depends_on:
+      - zookeeper
+  kafka-subscriber:
+    container_name: kafka-subscriber
+    image: kafka-subscriber:9.0
+    ports: 
+      - 8080:3000
+    environment: 
+      - HOST=kafka-broker
+      - PORT=29092
+    volumes: 
+      - "/Users/iksan/Desktop/consumer-dataset:/app/images"
+    depends_on: 
+      - zookeeper
+      - kafka
+
