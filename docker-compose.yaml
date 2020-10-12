@@ -23,6 +23,31 @@ services:
       ALLOW_PLAINTEXT_LISTENER: 'yes'
     depends_on:
       - zookeeper
+
+  mqtt-broker:
+    container_name: mqtt-broker
+    image: eclipse-mosquitto:1.6.12
+    ports: 
+      - 1883:1883
+      - 9001:9001
+    depends_on: 
+      - zookeeper
+      - kafka
+
+  mqtt-buffer:
+    container_name: mqtt-buffer
+    image: mqtt-buffer:1.0
+    environment: 
+      - HOST=kafka-broker
+      - PORT=29092
+      - HOSTMQTT=mqtt-broker
+      - PORTMQTT=1883
+    depends_on: 
+      - mqtt-broker
+      - zookeeper
+      - kafka
+      
+
   kafka-subscriber:
     container_name: kafka-subscriber
     image: kafka-subscriber:9.0
@@ -34,6 +59,8 @@ services:
     volumes: 
       - "/Users/iksan/Desktop/consumer-dataset:/app/images"
     depends_on: 
+      - mqtt-buffer
+      - mqtt-broker
       - zookeeper
       - kafka
 
