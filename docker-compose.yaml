@@ -68,6 +68,8 @@ services:
     image: mongo:4.4.1
     ports: 
       - 27017:27017
-
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=iksans
+      - MONGO_INITDB_ROOT_PASSWORD=lulus3325
     volumes: 
       - /Users/iksan/Desktop/mongo-database:/data/db
