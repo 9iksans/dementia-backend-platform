@@ -10,12 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "kafka-node": "^5.0.0",
-    "kafkajs": "^1.13.0",
-    "path": "^0.12.7"
+    "kafkajs": "^1.13.0"
   }
 }

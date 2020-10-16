@@ -62,5 +62,12 @@ services:
       - mqtt-buffer
       - mqtt-broker
       - zookeeper
-      - kafka
+  
+  mongo:
+    container_name: mongodb
+    image: mongo:4.4.1
+    ports: 
+      - 27017:27017
 
+    volumes: 
+      - /Users/iksan/Desktop/mongo-database:/data/db
