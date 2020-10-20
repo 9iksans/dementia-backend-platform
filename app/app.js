@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const userData = require("../routes/userData") 
+const dementiaData = require("../routes/dementiaData") 
 const morgan = require('morgan')
 
 
@@ -15,6 +16,8 @@ app.use(morgan('dev'))
 
 
 app.use("/userdata", userData)
+app.use("/dementiadata", dementiaData)
+
 
 app.use((req,res,next)=>{
     const error = new Error("Not Found")
