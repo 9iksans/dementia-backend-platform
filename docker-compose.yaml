@@ -6,7 +6,6 @@ services:
     ports: 3000:3000
     environment: PORT=3000
     
-  
   mongo:
     container_name: mongodb
     image: mongo:4.4.1
