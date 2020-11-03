@@ -16,7 +16,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_LISTENERS: LISTENER_PRODUCER://kafka-broker:9092, LISTENER_CONTAINER://kafka-broker:29092
-      KAFKA_ADVERTISED_LISTENERS: LISTENER_PRODUCER://localhost:9092, LISTENER_CONTAINER://kafka-broker:29092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_PRODUCER://x2.hcm-lab.id:9092, LISTENER_CONTAINER://kafka-broker:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_PRODUCER:PLAINTEXT,LISTENER_CONTAINER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_CONTAINER
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -45,7 +45,8 @@ services:
     depends_on: 
       - mqtt-broker
       - zookeeper
-      - kafka  
+      - kafka
+      
 
   streaming-proc:
     container_name: streaming-proc
@@ -54,10 +55,26 @@ services:
       - HOST=kafka-broker
       - PORT=29092
     volumes: 
-      - "/Users/iksan/Desktop/consumer-dataset:/app/images"
+      - "/home/iksans/consumer-dataset:/app/images"
     depends_on: 
       - iot-gateway
       - mqtt-broker
       - zookeeper
   
-  
+  rest-api:
+    container_name: rest-api-iksans
+    image: 9iksans/rest-api:1.0
+    ports: 3000:3000
+    environment: PORT=3000
+    
+  mongo:
+    container_name: mongodb
+    image: mongo:4.4.1
+    ports: 
+      - 27017:27017
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=iksans
+      - MONGO_INITDB_ROOT_PASSWORD=lulus3325
+    volumes: 
+      - /home/iksans/mongo-database:/data/db
+

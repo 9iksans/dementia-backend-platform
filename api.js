@@ -9,6 +9,25 @@ var fs = require("fs");
 const port = process.env.PORT;
 const host = process.env.HOST;
 
+
+///KAFKA CREATE TOPIC
+
+// var kafkaCreateTopic = require('kafka-node');
+// var clientCreateTopic = new kafkaCreateTopic.KafkaClient();
+// var topicsToCreate = [{
+//   topic: 'action.namefile',
+//   partitions : 1,
+//   replicationFactor: 1,
+//   },{
+//   topic: 'action.image',
+//   partitions : 1,
+//   replicationFactor: 1,
+//   },]
+
+// clientCreateTopic.createTopics(topicsToCreate, (error, result) => {
+//   console.log(result);
+// });
+
 const app = express();
 // dotenv.config();
 app.use(cors())
@@ -42,19 +61,19 @@ function decode_base64(base64str, filename) {
 const runKafkaSubs =async()=>{
   var namefile = null;
   consumer_image.connect();
-  consumer_image.subscribe({ topic: "/action/namefile", fromBeginning: true });
-  consumer_image.subscribe({ topic: "/action/image", fromBeginning: true });
+  consumer_image.subscribe({ topic: "action.namefile", fromBeginning: true });
+  consumer_image.subscribe({ topic: "action.image", fromBeginning: true });
     
   consumer_image.run({
     eachMessage: async ({ topic, partition, message }) => {
       
-      if(topic === "/action/namefile"){
+      if(topic === "action.namefile"){
         console.log(message.value.toString());
         namefile=message.value.toString();
         
       }
 
-      if (topic === "/action/image"){
+      if (topic === "action.image"){
         decode_base64(message.value.toString(), namefile+".jpg");
       }
            
