@@ -64,8 +64,10 @@ services:
   rest-api:
     container_name: rest-api-iksans
     image: 9iksans/rest-api:1.0
-    ports: 3000:3000
-    environment: PORT=3000
+    ports: 
+     - 3000:3000
+    environment: 
+     - PORT=3000
     
   mongo:
     container_name: mongodb
