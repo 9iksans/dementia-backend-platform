@@ -16,17 +16,18 @@ const producer = new Producer(client);
 
 
 var clientmqtt = mqtt.connect("tcp://"+hostmqtt+":"+portmqtt)
+
 clientmqtt.on('connect', function () {
-  clientmqtt.subscribe('image',{qos:1});
-  clientmqtt.subscribe('namefile',{qos:1});
+  clientmqtt.subscribe('/action/image',{qos:1});
+  clientmqtt.subscribe('/action/namefile',{qos:1});
   console.log('clientmqtt has subscribed successfully');
 });
 
 clientmqtt.on('message', function(topic, messagemqtt){
-  if(topic === 'namefile'){
+  if(topic === '/action/namefile'){
     var nameimagemqtt = messagemqtt
     let payloads = [{
-            topic : 'namefile',
+            topic : 'action.namefile',
             messages : nameimagemqtt.toString()
         }]
     
@@ -42,10 +43,10 @@ clientmqtt.on('message', function(topic, messagemqtt){
       
   }
 
-  if(topic === 'image'){
+  if(topic === '/action/image'){
     var imagemqtt = messagemqtt
         let payloads =[{
-            topic : 'image',
+            topic : 'action.image',
             messages : imagemqtt.toString()
         }]
         producer.send( payloads, (err, data) => {
