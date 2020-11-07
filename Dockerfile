@@ -10,5 +10,7 @@ COPY app /rest/app
 
 COPY routes /rest/routes
 
+COPY routes /rest/profileimage
+
 CMD ["node", "/rest/rest.js"] 
 

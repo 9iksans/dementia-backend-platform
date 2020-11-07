@@ -16,13 +16,11 @@ app.use(cors())
 app.use(morgan('dev'))
 
 
-app.use('/profileimage',express.static(path.join(__dirname,'../profileimage')));
+
 app.use("/userdata", userData)
 app.use("/dementiadata", dementiaData)
+app.use('/profileimage',express.static(path.join(__dirname,'../profileimage')));
 
-app.get("/index",(req,res)=>{
-    res.sendFile(__dirname + "/index.html")
-})
 
 
 app.use((req,res,next)=>{
