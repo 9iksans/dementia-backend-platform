@@ -1,4 +1,6 @@
 const express = require('express')
+const path = require('path')
+const multer = require('multer')
 const db = require('../app/dbconnect')
 const bodyParser = require('body-parser')
 const Joi = require('@hapi/joi')
@@ -10,6 +12,22 @@ const router = express.Router()
 const dementiaData = db.get('dementiaData')
 
 
+
+//for uploading image
+const diskStorage = multer.diskStorage({ 
+    destination : function (req,file, cb){
+        cb(null, path.join(__dirname, "../profileimage"))
+    },
+    filename: function (req, file, cb) {
+        cb(
+          null,
+          file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+        )
+    }
+})
+
+var upload = multer({ storage: diskStorage })
+
 //scheme for post dataUser
 const schema = Joi.object({
     name : Joi.string().trim().required(),
@@ -17,9 +35,23 @@ const schema = Joi.object({
     gender : Joi.string().trim().required(),
     diagnostic : Joi.string().trim().required(),
     urgent : Joi.string().trim().optional(),
+    profile : Joi.string().trim().optional(),
 })
 
 
+
+//post image
+
+router.post('/uploadfile', upload.single('dementiaPhotos'), (req, res, next) => {
+    const file = req.file
+    if (!file) {
+      const error = new Error('Please upload a file')
+      error.httpStatusCode = 400
+      return next(error)
+    }
+      res.send(file.filename)
+    
+  })
 
 //get
 router.get('/', async(req, res, next)=>{
