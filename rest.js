@@ -9,13 +9,7 @@ const imageToBase64 = require('image-to-base64');
 const { response } = require('./app/app');
 
 
-var sImage
 
-imageToBase64("./website/assets/iconload.png").then(
-    (response) => {
-        sImage = response
-    }
-)
 
 const kafka = new Kafka({
     clientId: "my-app",
