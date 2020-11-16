@@ -27,6 +27,8 @@ services:
   mqtt-broker:
     container_name: mqtt-broker
     image: eclipse-mosquitto:1.6.12
+    volumes: 
+      - "/home/iksans/mqtt-conf/mosquitto.conf:/mosquitto/config/mosquitto.conf"
     ports: 
       - 1883:1883
       - 9001:9001
@@ -50,10 +52,12 @@ services:
 
   streaming-proc:
     container_name: streaming-proc
-    image: streaming-proc:1.0
+    image: streaming-proc:3.0
     environment: 
       - HOST=kafka-broker
       - PORT=29092
+      - HOSTMQTT=mqtt-broker
+      - PORTMQTT=1883
     volumes: 
       - "/home/iksans/consumer-dataset:/app/images"
     depends_on: 
@@ -63,7 +67,9 @@ services:
   
   rest-api:
     container_name: rest-api-iksans
-    image: 9iksans/rest-api:1.0
+    image: 9iksans/rest-api:2.0
+    volumes: 
+      - "/home/iksans/image-db:/rest/profileimage"
     ports: 
      - 3000:3000
     environment: 

@@ -4,11 +4,13 @@ const { Kafka } = require("kafkajs");
 const dotenv = require('dotenv');
 var path = require("path");
 var fs = require("fs");
+const mqtt = require('mqtt')
 
 //port
 const port = process.env.PORT;
 const host = process.env.HOST;
-
+const hostmqtt = process.env.HOSTMQTT;
+const portmqtt = process.env.PORTMQTT;
 
 ///KAFKA CREATE TOPIC
 
@@ -31,6 +33,8 @@ const host = process.env.HOST;
 const app = express();
 // dotenv.config();
 app.use(cors())
+
+var clientmqtt = mqtt.connect("tcp://"+hostmqtt+":"+portmqtt)
 
 const kafka = new Kafka({
   clientId: "my-app",
@@ -74,8 +78,13 @@ const runKafkaSubs =async()=>{
       }
 
       if (topic === "action.image"){
-        decode_base64(message.value.toString(), namefile+".jpg");
+        decode_base64(message.value.toString(), namefile+Date.now()+".jpg");
       }
+
+      if (topic === "streaming.image"){
+        clientmqtt.publish('/streaming/image', message.value.toString())
+      }
+      
            
     },
   });
