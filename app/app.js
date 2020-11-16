@@ -6,7 +6,6 @@ const userData = require("../routes/userData")
 const dementiaData = require("../routes/dementiaData") 
 const morgan = require('morgan')
 
-
 const app = express()
 
 app.use(bodyParser.json())
@@ -19,6 +18,7 @@ app.use(morgan('dev'))
 
 app.use("/userdata", userData)
 app.use("/dementiadata", dementiaData)
+app.use('/website',express.static(path.join(__dirname,'../website')));
 app.use('/profileimage',express.static(path.join(__dirname,'../profileimage')));
 
 
@@ -35,5 +35,7 @@ app.use((error,req,res,next)=>{
         message : error.message
     })
 })
+
+
 
 module.exports = app
