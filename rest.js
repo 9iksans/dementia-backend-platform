@@ -1,13 +1,41 @@
+
+const { func } = require('@hapi/joi');
 const http = require('http')
 const port = process.env.PORT || 3000
 const { Kafka } = require("kafkajs");
+const { get } = require('./app/app');
 const app = require('./app/app')
 const rest = http.createServer(app);
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ server:rest });
-const imageToBase64 = require('image-to-base64');
-const { response } = require('./app/app');
+const io = require('socket.io')(rest);
+const db = require('./app/dbconnect')
 
+
+
+
+
+
+var demensiaID = "";
+io.sockets.on('connection',(socket)=>{
+    console.log("New User Connected")
+
+        
+})
+
+const dementiaData = db.get('dementiaData')
+var dataUser, dataLeng
+var getDatabase=  async function(){
+    try {
+        var value = await dementiaData.find({diagnostic : "Dementia"}, {sort : {_id : -1}})
+        dataUser = value
+        dataLeng = value.length
+        return createKafka()
+
+    } catch (error) {
+        console.log(error)
+    }
+    
+    
+}
 
 
 
@@ -16,38 +44,61 @@ const kafka = new Kafka({
     brokers: [ "x2.hcm-lab.id:9092"],
   });
   
+var consumer_image = []
   
-  
-const consumer_image = kafka.consumer({ groupId: "streaming-group" });
-
-const kafkaStreaming = async()=>{
-    await consumer_image.connect();
-    await consumer_image.subscribe({ topic: "streaming.image", fromBeginning: false });
-    await consumer_image.run({
+const kafkaStreaming = async(dementiaID, index)=>{
+    
+    consumer_image[index] = kafka.consumer({ groupId: "streaming-group-"+dementiaID });
+    await consumer_image[index].connect();
+    await consumer_image[index].subscribe({ topic: "streaming.image."+dementiaID, fromBeginning: false });
+    await consumer_image[index].run({
         eachMessage: async ({ topic, partition, message }) => {
-          if( await topic === "streaming.image"){
-            wss.clients.forEach( async function each(client) {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(message.value.toString())
-                }
-              });
-          }
-               
-        },
+        if(topic === "streaming.image."+dementiaID){
+            io.sockets.emit(dementiaID.toString(),message.value.toString())
+                // console.log(dementiaID)
+            }
+        }
       });
 }
 
-kafkaStreaming();
+const createKafka = ()=> {
+    for (const index in dataUser){
+        kafkaStreaming(dataUser[index]._id.toString(), index);
 
-wss.on('connection',function connection(ws) {
-    console.log("New Client Connected")
-  });
+    }
+}
 
-wss.on('close', function close() {
-    console.log("print connection close")
-  });
+
+getDatabase();
+
+
+// const consumer_stream = kafka.consumer({ groupId: "streaming-group-2" });
+
+// const kafkaStreaming2 = async()=>{
+//     await consumer_stream.connect();
+//     await consumer_stream.subscribe({ topic: "streaming.image2", fromBeginning: false });
+//     await consumer_stream.run({
+//         eachMessage: async ({ topic, partition, message }) => {
+//           if( await topic === "streaming.image2"){
+//             io.emit('streaming-two',message.value.toString())
+          
+//           }
+               
+//         },
+//       });
+// }
+
+// kafkaStreaming2();
 
 rest.listen(port,()=>{
     console.log("listening to port "+port)
 })
 
+
+
+
+const soket = (dementiaID, data)=> {
+    io.sockets.emit(dementiaID.toString(),data.toString())
+    //return console.log("masuk")
+}
+exports.soket = soket

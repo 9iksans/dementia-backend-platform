@@ -12,13 +12,18 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-  <link rel="stylesheet" href="./assets/main.css">
+  <link rel="stylesheet" href="../../assets/css/main.css">
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+  <script type="text/javascript" src="../../assets/js/socket.io.js"></script>
+
+
+
+
   <!-- Script -->
 
-  <script src="./assets/browserMqtt.js"></script>
+  <!-- <script src="./assets/browserMqtt.js"></script> -->
 
 
   <!-- <script src="./publish.js"></script> -->
@@ -27,14 +32,15 @@
 
 
   <!-- <h1><div id="hello">Hello, world!</div></h1> -->
-
+<body>
   <div class="container">
     <div class="row">
       <div class="col-sm-9 col-md-7 col-lg-9 mx-auto">
         <div class="card card-signin my-5">
           <div class="card-body">
-            <h3 class="text-center">Streaming</h5>
-              <img class="center" id="act-rec" src="./assets/load.gif" width="640" height="480">
+            <h3 class="text-center">Streaming on</h3>
+            <h5 class="text-center" id="userDementia">Loading..</h5>
+              <img class="center" id="act-rec" src="../../assets/image/load.gif" width="640" height="480">
               
           </div>
         </div>
@@ -48,21 +54,39 @@
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
   </script>
   <script>
-       const socket = new WebSocket("ws://localhost:3000/");
+    //  const socket = new WebSocket("ws://localhost:3000/streaming/index-stream/5fb2694ee9b50b7ac275bd21");
 
-        socket.addEventListener('open', function(event){
-          console.log("connected to websocet server")
-        })
+    //   socket.addEventListener('open', function(event){
+    //     console.log("connected to websocet server")
+    //   })
 
-        socket.addEventListener('message', function(event){
-          document.getElementById("act-rec").src = "data:image/png;base64," + event.data.toString();
-        })
-        
-        socket.addEventListener('close',function(close){
-          socket.send("close")
-        })
-        
-  </script>
+    //   socket.addEventListener('message', function(event){
+    //     document.getElementById("act-rec").src = "data:image/png;base64," + event.data.toString();
+    //   })
+      
+    //   socket.addEventListener('close',function(close){
+    //     socket.send("close")
+    //   })
+
+
+    var pageURL = window.location.href;
+    var lastURLSegment = pageURL.substr(pageURL.lastIndexOf('/') + 1);
+    // console.log(lastURLSegment);
+    
+    fetch("http://x2.hcm-lab.id:3000/dementiadata/"+lastURLSegment.toString())
+    .then((response)=>response.json())
+    .then(function(data){
+      //console.log(data)
+      document.getElementById("userDementia").innerHTML = data.name;
+    })
+
+    var socket = io()
+    socket.on(lastURLSegment.toString(), function(data){
+      document.getElementById("act-rec").src = "data:image/png;base64," + data.toString();
+      // console.log(data.toString())
+    })
+      
+</script>
 
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
     integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">

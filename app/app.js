@@ -2,10 +2,13 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const path = require('path')
 const cors = require('cors')
+const WebSocket = require('ws');
 const userData = require("../routes/userData") 
 const dementiaData = require("../routes/dementiaData") 
 const morgan = require('morgan')
+const { Kafka } = require("kafkajs");
 
+var dementiaUserId
 const app = express()
 
 app.use(bodyParser.json())
@@ -18,8 +21,17 @@ app.use(morgan('dev'))
 
 app.use("/userdata", userData)
 app.use("/dementiadata", dementiaData)
-app.use('/website',express.static(path.join(__dirname,'../website')));
+app.use('/assets',express.static(path.join(__dirname,'../website/assets')));
 app.use('/profileimage',express.static(path.join(__dirname,'../profileimage')));
+
+
+
+app.get('/streaming/index-stream/:userID', async(req, res, next)=>{
+
+    res.sendFile(path.join(__dirname + '../../website/streaming/index-stream.html'));
+    
+})
+
 
 
 

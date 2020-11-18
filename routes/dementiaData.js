@@ -1,5 +1,6 @@
 const express = require('express')
 const path = require('path')
+const sio = require('../rest')
 const multer = require('multer')
 const db = require('../app/dbconnect')
 const bodyParser = require('body-parser')
@@ -7,6 +8,8 @@ const Joi = require('@hapi/joi')
 const { join } = require('path')
 const { error } = require('console')
 const { set } = require('../app/app')
+
+const { Kafka } = require("kafkajs");
 
 const router = express.Router()
 const dementiaData = db.get('dementiaData')
@@ -117,6 +120,8 @@ router.post('/',async (req, res, next)=>{
         response : "success",
         message : inserted
     })
+    //console.log(inserted._id)
+    kafkaStreaming(inserted._id.toString())
    } catch (error) {
     next(error)
    }
@@ -155,5 +160,27 @@ router.delete('/:userID',async (req, res, next)=>{
 })
 
 
+
+const kafka = new Kafka({
+    clientId: "my-app",
+    brokers: [ "x2.hcm-lab.id:9092"],
+  });
+
+const kafkaStreaming = async(dementiaID)=>{
+    
+    var consumer_image = kafka.consumer({ groupId: "streaming-group-"+dementiaID });
+    await consumer_image.connect();
+    await consumer_image.subscribe({ topic: "streaming.image."+dementiaID, fromBeginning: false });
+    await consumer_image.run({
+        eachMessage: async ({ topic, partition, message }) => {
+        if(topic === "streaming.image."+dementiaID){
+                //io.sockets.emit(dementiaID.toString(),message.value.toString())
+                // console.log(dementiaID)
+                sio.soket(dementiaID.toString(),message.value.toString())
+                //console.log("masuk")
+            }
+        }
+      });
+}
 
 module.exports = router;
