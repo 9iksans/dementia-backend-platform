@@ -40,7 +40,7 @@
           <div class="card-body">
             <h3 class="text-center">Streaming on</h3>
             <h5 class="text-center" id="userDementia">Loading..</h5>
-              <img class="center" id="act-rec" src="../../assets/image/load.gif" width="640" height="480">
+              <img class="center img-fluid" id="act-rec" src="../../assets/image/load.gif" >
               
           </div>
         </div>
@@ -70,8 +70,10 @@
 
 
     var pageURL = window.location.href;
+    pageURL = pageURL.split("?")
+    pageURL = pageURL[0];
     var lastURLSegment = pageURL.substr(pageURL.lastIndexOf('/') + 1);
-    // console.log(lastURLSegment);
+    console.log(lastURLSegment);
     
     fetch("http://x2.hcm-lab.id:3000/dementiadata/"+lastURLSegment.toString())
     .then((response)=>response.json())

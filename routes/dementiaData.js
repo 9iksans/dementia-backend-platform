@@ -4,6 +4,7 @@ const sio = require('../rest')
 const multer = require('multer')
 const db = require('../app/dbconnect')
 const bodyParser = require('body-parser')
+const verify = require('./verifyToken')
 const Joi = require('@hapi/joi')
 const { join } = require('path')
 const { error } = require('console')
@@ -57,7 +58,7 @@ router.post('/uploadfile', upload.single('dementiaPhotos'), (req, res, next) => 
   })
 
 //get
-router.get('/', async(req, res, next)=>{
+router.get('/',verify ,async(req, res, next)=>{
     try {
         const value = await dementiaData.find({})
         res.json(value)
@@ -67,7 +68,7 @@ router.get('/', async(req, res, next)=>{
 })
 
 
-router.get('/recent', async(req, res, next)=>{
+router.get('/recent',verify, async(req, res, next)=>{
     try {
         const value = await dementiaData.find({diagnostic : "Dementia"}, {sort : {_id : -1}})
         res.json(value)
@@ -76,7 +77,7 @@ router.get('/recent', async(req, res, next)=>{
     }
 })
 
-router.get('/urgent', async(req, res, next)=>{
+router.get('/urgent',verify, async(req, res, next)=>{
     try {
         const value = await dementiaData.find({urgent : {$exists : true}}, {sort :{_id : -1}})
         res.json(value)
@@ -84,7 +85,7 @@ router.get('/urgent', async(req, res, next)=>{
         next(error)
     }
 })
-router.get('/:userID', async(req, res, next)=>{
+router.get('/:userID',verify, async(req, res, next)=>{
     try {
         const { userID }= req.params;
         const value = await dementiaData.findOne({_id : userID})
@@ -100,7 +101,7 @@ router.get('/:userID', async(req, res, next)=>{
     }
 })
 
-router.get('/username/:userAlias', async(req, res, next)=>{
+router.get('/username/:userAlias',verify, async(req, res, next)=>{
     try {
         const {userAlias} = req.params;
         const value = await dementiaData.find({name : userAlias})
@@ -112,7 +113,7 @@ router.get('/username/:userAlias', async(req, res, next)=>{
 })
 
 //post
-router.post('/',async (req, res, next)=>{
+router.post('/',verify,async (req, res, next)=>{
    try {
     const value = await schema.validateAsync(req.body);
     const inserted = await dementiaData.insert(value)
@@ -128,7 +129,7 @@ router.post('/',async (req, res, next)=>{
 })
 
 
-router.put('/:userID',async(req, res, next)=>{
+router.put('/:userID',verify,async(req, res, next)=>{
     try {
         const value = await schema.validateAsync(req.body)
         
@@ -144,7 +145,7 @@ router.put('/:userID',async(req, res, next)=>{
     }
 })
 
-router.delete('/:userID',async (req, res, next)=>{
+router.delete('/:userID',verify,async (req, res, next)=>{
     try {
         const {userID} = req.params
         const findUser = await dementiaData.findOne({_id : userID})
