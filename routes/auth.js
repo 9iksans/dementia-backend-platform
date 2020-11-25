@@ -88,7 +88,8 @@ router.post('/login', async (req, res, next) => {
     
             res.header('auth-token',token).json({
                 response: "success",
-                message: "Loged In, with token "+token
+                message: "Loged In, with token ",
+                token : token
             })
         }
 
