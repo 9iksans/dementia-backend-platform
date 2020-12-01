@@ -1,18 +1,16 @@
 FROM node:lts
 
-COPY package.json /rest/package.json
+COPY package.json /front-end/package.json
 
-RUN cd rest && npm install
+RUN cd front-end && npm install
 
-COPY rest.js /rest/rest.js
+COPY front-end.js /front-end/front-end.js
 
-COPY app /rest/app
+COPY app /front-end/app
 
-COPY routes /rest/routes
+COPY routes /front-end/routes
 
-COPY profileimage /rest/profileimage
+COPY website /front-end/website
 
-COPY website /rest/website
-
-CMD ["node", "/rest/rest.js"] 
+CMD ["node", "/front-end/front-end.js"] 
 
