@@ -4,6 +4,10 @@ COPY package.json /app/package.json
 
 RUN cd app && npm install
 
+COPY images /app/images
+
+COPY audios /app/audios
+
 COPY mqtt-buffer.js /app/mqtt-buffer.js
 
 CMD ["node", "/app/mqtt-buffer.js"] 
