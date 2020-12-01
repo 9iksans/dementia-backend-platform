@@ -36,12 +36,12 @@ services:
       - zookeeper
       - kafka
 
-  iot-gateway:
-    container_name: iot-gateway
-    image: iot-gateway:1.0
+  mqtt-dataset:
+    container_name: mqtt-dataset
+    image: mqtt-dataset:2.0
+    volumes: 
+      - "/home/iksans/consumer-dataset:/app/images"
     environment: 
-      - HOST=kafka-broker
-      - PORT=29092
       - HOSTMQTT=mqtt-broker
       - PORTMQTT=1883
     depends_on: 
@@ -61,19 +61,28 @@ services:
     volumes: 
       - "/home/iksans/consumer-dataset:/app/images"
     depends_on: 
-      - iot-gateway
+      - mqtt-dataset
       - mqtt-broker
       - zookeeper
   
   rest-api:
     container_name: rest-api-iksans
-    image: 9iksans/rest-api:2.0
+    image: 9iksans/rest-api:6.0
     volumes: 
       - "/home/iksans/image-db:/rest/profileimage"
     ports: 
      - 3000:3000
     environment: 
      - PORT=3000
+     - CORS=http://x2.hcm-lab.id:3001
+  
+  front-end:
+    container_name: front-end-iksans
+    image: 9iksans/front-end:1.0
+    ports: 
+     - 3001:3001
+    environment: 
+     - PORT=3001
     
   mongo:
     container_name: mongodb
