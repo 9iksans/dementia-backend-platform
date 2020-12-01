@@ -91,7 +91,7 @@
         document.getElementById("userDementia").innerHTML = data.name;
       })
 
-    var socket = io("http://localhost:3000/")
+    var socket = io("http://x2.hcm-lab.id:3000/")
     socket.on(lastURLSegment.toString(), function (data) {
       document.getElementById("act-rec").src = "data:image/png;base64," + data.toString();
       // console.log(data.toString())
