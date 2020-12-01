@@ -21,36 +21,10 @@ app.use(morgan('dev'))
 
 
 
-app.use("/userdata", userData)
-app.use("/dementiadata", dementiaData)
-app.use("/auth", authUser)
-app.use('/assets',express.static(path.join(__dirname,'../website/assets')));
-app.use('/profileimage',express.static(path.join(__dirname,'../profileimage')));
-
-
-
-app.get('/streaming/index-stream/:userID', async(req, res, next)=>{
-    
-    const token = req.query.tokenID
-    if(!token) return res.status(401).json({
-        response : "error",
-        message : "Accsess Denied"
-    })
-
-    try {
-        const verified = jwt.verify(token,"asdkajsdklajslkdj")
-        req.user = verified
-        res.sendFile(path.join(__dirname + '../../website/streaming/index-stream.html'));
-    } catch (error) {
-        res.status(400).json({
-            response : "error",
-            message : "Invalid Token"
-        })
-    }
-
-    
-    
-})
+app.use("/api/userdata", userData)
+app.use("/api/dementiadata", dementiaData)
+app.use("/api/auth", authUser)
+app.use('/api/profileimage',express.static(path.join(__dirname,'../profileimage')));
 
 
 

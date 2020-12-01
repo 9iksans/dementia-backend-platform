@@ -12,7 +12,6 @@ COPY routes /rest/routes
 
 COPY profileimage /rest/profileimage
 
-COPY website /rest/website
 
 CMD ["node", "/rest/rest.js"] 
 

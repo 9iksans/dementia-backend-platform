@@ -2,14 +2,18 @@
 const { func } = require('@hapi/joi');
 const http = require('http')
 const port = process.env.PORT || 3000
+const allowSocketCors = process.env.CORS || "http://localhost:3001"
 const { Kafka } = require("kafkajs");
 const { get } = require('./app/app');
 const app = require('./app/app')
 const rest = http.createServer(app);
-const io = require('socket.io')(rest);
+const io = require('socket.io')(rest, {
+    cors: {
+      origin: allowSocketCors,
+      methods: ["GET", "POST"]
+    }
+  });
 const db = require('./app/dbconnect')
-
-
 
 
 
@@ -71,24 +75,6 @@ const createKafka = ()=> {
 
 getDatabase();
 
-
-// const consumer_stream = kafka.consumer({ groupId: "streaming-group-2" });
-
-// const kafkaStreaming2 = async()=>{
-//     await consumer_stream.connect();
-//     await consumer_stream.subscribe({ topic: "streaming.image2", fromBeginning: false });
-//     await consumer_stream.run({
-//         eachMessage: async ({ topic, partition, message }) => {
-//           if( await topic === "streaming.image2"){
-//             io.emit('streaming-two',message.value.toString())
-          
-//           }
-               
-//         },
-//       });
-// }
-
-// kafkaStreaming2();
 
 rest.listen(port,()=>{
     console.log("listening to port "+port)

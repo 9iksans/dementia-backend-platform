@@ -121,7 +121,6 @@ router.post('/',verify,async (req, res, next)=>{
         response : "success",
         message : inserted
     })
-    //console.log(inserted._id)
     kafkaStreaming(inserted._id.toString())
    } catch (error) {
     next(error)
@@ -175,10 +174,8 @@ const kafkaStreaming = async(dementiaID)=>{
     await consumer_image.run({
         eachMessage: async ({ topic, partition, message }) => {
         if(topic === "streaming.image."+dementiaID){
-                //io.sockets.emit(dementiaID.toString(),message.value.toString())
-                // console.log(dementiaID)
                 sio.soket(dementiaID.toString(),message.value.toString())
-                //console.log("masuk")
+   
             }
         }
       });
