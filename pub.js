@@ -9,7 +9,7 @@ client.on('connect', function(){
         "imrecog" : "Standing"
     }
     client.publish('/action/image',JSON.stringify(pubs), {qos:1});
-    client.publish('/action/imrecog/aa',"Sitting", {qos:1});
+    client.publish('/action/imrecog/5f8f2e00c00456e8e03e5e9d',"Sitting", {qos:1});
 
     console.log("success");
 

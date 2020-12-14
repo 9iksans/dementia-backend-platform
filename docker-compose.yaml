@@ -1,0 +1,97 @@
+version: "3"
+services:
+  zookeeper:
+    container_name: 'zookeper-broker'
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    container_name: 'kafka-broker'
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9092:9092'
+      - '29092:29092'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: LISTENER_PRODUCER://kafka-broker:9092, LISTENER_CONTAINER://kafka-broker:29092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_PRODUCER://x2.hcm-lab.id:9092, LISTENER_CONTAINER://kafka-broker:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_PRODUCER:PLAINTEXT,LISTENER_CONTAINER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_CONTAINER
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+    depends_on:
+      - zookeeper
+
+  mqtt-broker:
+    container_name: mqtt-broker
+    image: eclipse-mosquitto:1.6.12
+    volumes: 
+      - "/home/iksans/mqtt-conf/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+    ports: 
+      - 1883:1883
+      - 9001:9001
+    depends_on: 
+      - zookeeper
+      - kafka
+
+  mqtt-dataset:
+    container_name: mqtt-dataset
+    image: mqtt-dataset:2.0
+    volumes: 
+      - "/home/iksans/consumer-dataset:/app/images"
+    environment: 
+      - HOSTMQTT=mqtt-broker
+      - PORTMQTT=1883
+    depends_on: 
+      - mqtt-broker
+      - zookeeper
+      - kafka
+      
+
+  streaming-proc:
+    container_name: streaming-proc
+    image: streaming-proc:3.0
+    environment: 
+      - HOST=kafka-broker
+      - PORT=29092
+      - HOSTMQTT=mqtt-broker
+      - PORTMQTT=1883
+    volumes: 
+      - "/home/iksans/consumer-dataset:/app/images"
+    depends_on: 
+      - mqtt-dataset
+      - mqtt-broker
+      - zookeeper
+  
+  rest-api:
+    container_name: rest-api-iksans
+    image: 9iksans/rest-api:6.0
+    volumes: 
+      - "/home/iksans/image-db:/rest/profileimage"
+    ports: 
+     - 3000:3000
+    environment: 
+     - PORT=3000
+     - CORS=http://x2.hcm-lab.id:3001
+  
+  front-end:
+    container_name: front-end-iksans
+    image: 9iksans/front-end:1.0
+    ports: 
+     - 3001:3001
+    environment: 
+     - PORT=3001
+    
+  mongo:
+    container_name: mongodb
+    image: mongo:4.4.1
+    ports: 
+      - 27017:27017
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=iksans
+      - MONGO_INITDB_ROOT_PASSWORD=lulus3325
+    volumes: 
+      - /home/iksans/mongo-database:/data/db
+

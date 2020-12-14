@@ -10,8 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "dateformat": "^4.3.1",
     "fs": "0.0.1-security",
     "kafka-node": "^5.0.0",
+    "monk": "^7.3.2",
     "mqtt": "^4.2.1",
     "path": "^0.12.7"
   }
