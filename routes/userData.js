@@ -1,6 +1,7 @@
 const express = require('express')
 const db = require('../app/dbconnect')
 const bodyParser = require('body-parser')
+const verify = require('./verifyToken')
 const Joi = require('@hapi/joi')
 const { join } = require('path')
 const { error } = require('console')
@@ -20,7 +21,7 @@ const schema = Joi.object({
 
 
 //get
-router.get('/', async(req, res, next)=>{
+router.get('/', verify, async(req, res, next)=>{
     try {
         const value = await userData.find({})
         res.json(value)
@@ -29,7 +30,7 @@ router.get('/', async(req, res, next)=>{
     }
 })
 
-router.get('/:userID', async(req, res, next)=>{
+router.get('/:userID',  verify, async(req, res, next)=>{
     try {
         const { userID }= req.params;
         const value = await userData.findOne({_id : userID})
@@ -45,10 +46,10 @@ router.get('/:userID', async(req, res, next)=>{
     }
 })
 
-router.get('/username/:userAlias', async(req, res, next)=>{
+router.get('/username/:userAlias', verify,async(req, res, next)=>{
     try {
         const {userAlias} = req.params;
-        const value = await userData.find({name : userAlias})
+        const value = await userData.find({username : userAlias})
         if(!value) return next()
         return res.json(value)
     } catch (error) {
@@ -57,7 +58,7 @@ router.get('/username/:userAlias', async(req, res, next)=>{
 })
 
 //post
-router.post('/',async (req, res, next)=>{
+router.post('/', verify,async (req, res, next)=>{
    try {
     const value = await schema.validateAsync(req.body);
     const inserted = await userData.insert(value)
@@ -71,7 +72,7 @@ router.post('/',async (req, res, next)=>{
 })
 
 
-router.put('/:userID',async(req, res, next)=>{
+router.put('/:userID',  verify,async(req, res, next)=>{
     try {
         const value = await schema.validateAsync(req.body)
         
@@ -87,7 +88,7 @@ router.put('/:userID',async(req, res, next)=>{
     }
 })
 
-router.delete('/:userID',async (req, res, next)=>{
+router.delete('/:userID',  verify,async (req, res, next)=>{
     try {
         const {userID} = req.params
         const findUser = await userData.findOne({_id : userID})

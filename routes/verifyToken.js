@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken')
+const db =require('../app/dbconnect')
 
-module.exports = function (req, res, next) {
+const jwtGenerator = db.get('jwtGenerator')
+
+module.exports = async function(req, res, next) {
     const token = req.header('auth-token')
     if(!token) return res.status(401).json({
         response : "error",
@@ -8,7 +11,8 @@ module.exports = function (req, res, next) {
     })
 
     try {
-        const verified = jwt.verify(token,"asdkajsdklajslkdj")
+        const jwtLastToken = await jwtGenerator.findOne({_id : "5fd5af3f0d38a153301d4219"})
+        const verified = jwt.verify(token,jwtLastToken.jwtLastToken)
         req.user = verified
         next()
     } catch (error) {

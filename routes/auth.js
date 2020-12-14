@@ -13,10 +13,11 @@ const {
     set
 } = require('../app/app')
 const md5 = require('md5')
+const { CONNECTING } = require('ws')
 
 const router = express.Router()
 const userData = db.get('userData')
-
+const jwtGenerator = db.get('jwtGenerator')
 
 //scheme for post dataUser
 const schemaRegister = Joi.object({
@@ -83,8 +84,8 @@ router.post('/login', async (req, res, next) => {
                 status: "error",    
                 message: "Invalid Password"
             })
-    
-            const token = jwt.sign({_id : usernameExist._id},"asdkajsdklajslkdj")
+            const jwtLastToken = await jwtGenerator.findOne({_id : "5fd5af3f0d38a153301d4219"})
+            const token = jwt.sign({_id : usernameExist._id},jwtLastToken.jwtLastToken)
     
             res.header('auth-token',token).json({
                 response: "success",

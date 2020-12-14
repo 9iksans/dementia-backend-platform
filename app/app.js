@@ -6,6 +6,7 @@ const cors = require('cors')
 const WebSocket = require('ws');
 const userData = require("../routes/userData") 
 const dementiaData = require("../routes/dementiaData") 
+const actionData = require('../routes/dementiaAction')
 const morgan = require('morgan')
 const { Kafka } = require("kafkajs");
 const jwt = require('jsonwebtoken')
@@ -24,6 +25,7 @@ app.use(morgan('dev'))
 app.use("/api/userdata", userData)
 app.use("/api/dementiadata", dementiaData)
 app.use("/api/auth", authUser)
+app.use("/api/actiondata", actionData)
 app.use('/api/profileimage',express.static(path.join(__dirname,'../profileimage')));
 
 
