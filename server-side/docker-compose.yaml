@@ -40,7 +40,7 @@ services:
     container_name: mqtt-dataset
     image: mqtt-dataset:2.0
     volumes: 
-      - "/home/iksans/consumer-dataset:/app/images"
+      - "/home/iksans/consumer-dataset:/app"
     environment: 
       - HOSTMQTT=mqtt-broker
       - PORTMQTT=1883
@@ -49,21 +49,6 @@ services:
       - zookeeper
       - kafka
       
-
-  streaming-proc:
-    container_name: streaming-proc
-    image: streaming-proc:3.0
-    environment: 
-      - HOST=kafka-broker
-      - PORT=29092
-      - HOSTMQTT=mqtt-broker
-      - PORTMQTT=1883
-    volumes: 
-      - "/home/iksans/consumer-dataset:/app/images"
-    depends_on: 
-      - mqtt-dataset
-      - mqtt-broker
-      - zookeeper
   
   rest-api:
     container_name: rest-api-iksans
