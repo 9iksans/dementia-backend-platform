@@ -36,10 +36,18 @@ router.get('/:edgeSource/:userID',verify, async(req, res, next)=>{
     var time = new Date();
     time.setHours( time.getHours() - time.getHours() );
     try {
+        const actRec = req.query.actRec
         const userID = req.params.userID
         const edgeSource = req.params.edgeSource
-        const value = await dementiaAction.find({userID : userID, edgeSource : edgeSource, "time" :  {"$gte": time} } )
-        if(!value) return next()
+        var value 
+        if(actRec == null){
+            value = await dementiaAction.find({userID : userID , edgeSource : edgeSource, "time" :  {"$gte": time} } )
+            if(!value) return next()
+        }else{
+            value = await dementiaAction.find({userID : userID, action : actRec, edgeSource : edgeSource, "time" :  {"$gte": time} } )
+            if(!value) return next()
+        }
+        
         return res.json(value)
     } catch (error) {
         next(error)
@@ -50,19 +58,28 @@ router.get('/:edgeSource/:userID/:timeFilter',verify, async(req, res, next)=>{
 
     try {
         const userID = req.params.userID;
+        const actRec = req.query.actRec
         const edgeSource = req.params.edgeSource
         const timeFilter = req.params.timeFilter;
 
         const timeUntil = new Date(timeFilter.toString())
         timeUntil.setDate( timeUntil.getDate() + 1 );
 
-        const value = await dementiaAction.find({userID : userID, edgeSource : edgeSource, "time" :  {"$gte": new Date(timeFilter.toString()), "$lt": timeUntil} } )
-        if(!value) return next()
+        var value
+        if(actRec == null){
+            value = await dementiaAction.find({userID : userID, edgeSource : edgeSource, "time" :  {"$gte": new Date(timeFilter.toString()), "$lt": timeUntil} } )
+            if(!value) return next()
+        }else{
+            value = await dementiaAction.find({userID : userID, action : actRec, edgeSource : edgeSource, "time" :  {"$gte": new Date(timeFilter.toString()), "$lt": timeUntil} } )
+            if(!value) return next()
+        }
+
         return res.json(value)
     } catch (error) {
         next(error)
     }
 })
+
 
 
 //post

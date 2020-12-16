@@ -85,6 +85,7 @@ router.post('/login', async (req, res, next) => {
                 message: "Invalid Password"
             })
             const jwtLastToken = await jwtGenerator.findOne({_id : "5fd5af3f0d38a153301d4219"})
+            console.log(jwtLastToken.jwtLastToken)
             const token = jwt.sign({_id : usernameExist._id},jwtLastToken.jwtLastToken)
     
             res.header('auth-token',token).json({
