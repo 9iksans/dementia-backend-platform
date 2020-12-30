@@ -72,7 +72,7 @@ const createKafka = ()=> {
     }
 }
 
-//getDatabase();
+getDatabase();
 
 
 rest.listen(port,()=>{
