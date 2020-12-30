@@ -16,7 +16,7 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_LISTENERS: LISTENER_PRODUCER://kafka-broker:9092, LISTENER_CONTAINER://kafka-broker:29092
-      KAFKA_ADVERTISED_LISTENERS: LISTENER_PRODUCER://x2.hcm-lab.id:9092, LISTENER_CONTAINER://kafka-broker:29092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_PRODUCER://192.168.1.36:9092, LISTENER_CONTAINER://kafka-broker:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_PRODUCER:PLAINTEXT,LISTENER_CONTAINER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_CONTAINER
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -28,7 +28,7 @@ services:
     container_name: mqtt-broker
     image: eclipse-mosquitto:1.6.12
     volumes: 
-      - "/home/iksans/mqtt-conf/mosquitto.conf:/mosquitto/config/mosquitto.conf"
+      - "/Users/iksans/documents/backend-platform/mqtt-conf/mosquitto.conf:/mosquitto/config/mosquitto.conf"
     ports: 
       - 1883:1883
       - 9001:9001
@@ -38,9 +38,10 @@ services:
 
   mqtt-dataset:
     container_name: mqtt-dataset
-    image: mqtt-dataset:2.0
+    image: mqtt-dataset:2.1
     volumes: 
-      - "/home/iksans/consumer-dataset:/app"
+      - "/Users/iksans/documents/backend-platform/consumer-dataset/images:/app/images"
+      - "/Users/iksans/documents/backend-platform/consumer-dataset/audios:/app/audios"
     environment: 
       - HOSTMQTT=mqtt-broker
       - PORTMQTT=1883
@@ -52,18 +53,18 @@ services:
   
   rest-api:
     container_name: rest-api-iksans
-    image: 9iksans/rest-api:6.0
+    image: 9iksans/rest-api:6.5
     volumes: 
-      - "/home/iksans/image-db:/rest/profileimage"
+      - "/Users/iksans/documents/backend-platform/image-db:/rest/profileimage"
     ports: 
      - 3000:3000
     environment: 
      - PORT=3000
-     - CORS=http://x2.hcm-lab.id:3001
+     - CORS=http://192.168.1.36:3001
   
   front-end:
     container_name: front-end-iksans
-    image: 9iksans/front-end:1.0
+    image: 9iksans/front-end:2.0
     ports: 
      - 3001:3001
     environment: 
@@ -78,5 +79,4 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=iksans
       - MONGO_INITDB_ROOT_PASSWORD=lulus3325
     volumes: 
-      - /home/iksans/mongo-database:/data/db
-
+      - /Users/iksans/documents/backend-platform/mongo-database:/data/db
