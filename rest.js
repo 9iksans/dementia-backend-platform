@@ -45,7 +45,7 @@ var getDatabase=  async function(){
 
 const kafka = new Kafka({
     clientId: "my-app",
-    brokers: [ "x2.hcm-lab.id:9092"],
+    brokers: [ "192.168.1.36:9092"],
   });
   
 var consumer_image = []
@@ -72,8 +72,7 @@ const createKafka = ()=> {
     }
 }
 
-
-getDatabase();
+//getDatabase();
 
 
 rest.listen(port,()=>{

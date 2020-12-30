@@ -31,6 +31,16 @@ const schemaAction = Joi.object({
 
 //get
 
+router.get('/last/:edgeSource/:userID',verify, async(req, res, next)=>{
+    try {
+        const userID = req.params.userID
+        const edgeSource = req.params.edgeSource
+        const value = await dementiaAction.findOne({userID : userID , edgeSource : edgeSource}, {sort : {_id : -1}})
+        res.json(value)
+    } catch (error) {
+        next(error)
+    }
+})
 
 router.get('/:edgeSource/:userID',verify, async(req, res, next)=>{
     var time = new Date();

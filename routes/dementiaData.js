@@ -40,6 +40,7 @@ const schema = Joi.object({
     diagnostic : Joi.string().trim().required(),
     urgent : Joi.string().trim().optional(),
     profile : Joi.string().trim().optional(),
+    userdoctor : Joi.string().trim().required(),
 })
 
 
@@ -68,18 +69,20 @@ router.get('/',verify ,async(req, res, next)=>{
 })
 
 
-router.get('/recent',verify, async(req, res, next)=>{
+router.get('/recent/:userDoctor',verify, async(req, res, next)=>{
     try {
-        const value = await dementiaData.find({diagnostic : "Dementia"}, {sort : {_id : -1}})
+        const userDoctor  = req.params.userDoctor;
+        const value = await dementiaData.find({diagnostic : "Dementia", userdoctor : userDoctor}, {sort : {_id : -1}})
         res.json(value)
     } catch (error) {
         next(error)
     }
 })
 
-router.get('/urgent',verify, async(req, res, next)=>{
+router.get('/urgent/:userDoctor',verify, async(req, res, next)=>{
     try {
-        const value = await dementiaData.find({urgent : {$exists : true}}, {sort :{_id : -1}})
+        const userDoctor  = req.params.userDoctor;
+        const value = await dementiaData.find({urgent : {$exists : true}, userdoctor : userDoctor}, {sort :{_id : -1}})
         res.json(value)
     } catch (error) {
         next(error)
@@ -163,7 +166,7 @@ router.delete('/:userID',verify,async (req, res, next)=>{
 
 const kafka = new Kafka({
     clientId: "my-app",
-    brokers: [ "x2.hcm-lab.id:9092"],
+    brokers: [ "192.168.1.36:9092"],
   });
 
 const kafkaStreaming = async(dementiaID)=>{
