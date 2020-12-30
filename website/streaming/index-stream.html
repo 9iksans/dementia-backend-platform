@@ -80,7 +80,7 @@
     var lastURLSegment = pageURL.substr(pageURL.lastIndexOf('/') + 1);
     //console.log(lastURLSegment);
 
-    fetch("http://x2.hcm-lab.id:3000/api/dementiadata/" + lastURLSegment.toString(), {
+    fetch("http://192.168.1.36:3000/api/dementiadata/" + lastURLSegment.toString(), {
         headers: {
           "auth-token": pageParam
         }
@@ -91,7 +91,7 @@
         document.getElementById("userDementia").innerHTML = data.name;
       })
 
-    var socket = io("http://x2.hcm-lab.id:3000/")
+    var socket = io("http://192.168.1.36:3000/")
     socket.on(lastURLSegment.toString(), function (data) {
       document.getElementById("act-rec").src = "data:image/png;base64," + data.toString();
       // console.log(data.toString())

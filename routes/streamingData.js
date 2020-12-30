@@ -20,7 +20,7 @@ router.get('/index-stream/:userID', async(req, res, next)=>{
     })
 
     try {
-        const jwtLastToken = await jwtGenerator.findOne({_id : "5fd5af3f0d38a153301d4219"})
+        const jwtLastToken = await jwtGenerator.findOne({_id : "5fe9958c9812e80616321bb4"})
         const verified = jwt.verify(token,jwtLastToken.jwtLastToken)
         req.user = verified
         res.sendFile(path.join(__dirname + '../../website/streaming/index-stream.html'));
