@@ -5,7 +5,7 @@ var fs = require("fs");
 const db = require('./dbconnect')
 const Joi = require('@hapi/joi')
 
-const hostmqtt = process.env.HOSTMQTT || "x2.hcm-lab.id";
+const hostmqtt = process.env.HOSTMQTT || "192.168.1.36";
 const portmqtt = process.env.PORTMQTT || 1883;
 const dementiaAction = db.get('dementiaAction')
 
