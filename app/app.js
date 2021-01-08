@@ -7,6 +7,8 @@ const WebSocket = require('ws');
 const userData = require("../routes/userData") 
 const dementiaData = require("../routes/dementiaData") 
 const actionData = require('../routes/dementiaAction')
+const dementiaMSEEQuestion = require('../routes/dementiaClassifier')
+const dementiaMSEEAnswer = require('../routes/dementiaAnswer')
 const morgan = require('morgan')
 const { Kafka } = require("kafkajs");
 const jwt = require('jsonwebtoken')
@@ -25,6 +27,8 @@ app.use(morgan('dev'))
 app.use("/api/userdata", userData)
 app.use("/api/dementiadata", dementiaData)
 app.use("/api/auth", authUser)
+app.use("/api/dementiaMSEEQuestion", dementiaMSEEQuestion)
+app.use("/api/dementiaMSEEAnswer", dementiaMSEEAnswer)
 app.use("/api/actiondata", actionData)
 app.use('/api/profileimage',express.static(path.join(__dirname,'../profileimage')));
 

@@ -14,7 +14,7 @@ const { Kafka } = require("kafkajs");
 
 const router = express.Router()
 const dementiaData = db.get('dementiaData')
-
+const dementiaMSEEAnswer = db.get('dementiaAnswerMSEE')
 
 
 //for uploading image
@@ -31,6 +31,7 @@ const diskStorage = multer.diskStorage({
 })
 
 var upload = multer({ storage: diskStorage })
+
 
 //scheme for post dataUser
 const schema = Joi.object({
@@ -72,7 +73,7 @@ router.get('/',verify ,async(req, res, next)=>{
 router.get('/recent/:userDoctor',verify, async(req, res, next)=>{
     try {
         const userDoctor  = req.params.userDoctor;
-        const value = await dementiaData.find({diagnostic : "Dementia", userdoctor : userDoctor}, {sort : {_id : -1}})
+        const value = await dementiaData.find({ $or : [{diagnostic : "Dementia"}, {diagnostic : "Mild Dementia"}, {diagnostic : "Severe Dementia"}], userdoctor : userDoctor}, {sort : {_id : -1}})
         res.json(value)
     } catch (error) {
         next(error)
@@ -88,6 +89,17 @@ router.get('/urgent/:userDoctor',verify, async(req, res, next)=>{
         next(error)
     }
 })
+
+router.get('/nevertested/:userDoctor',verify, async(req, res, next)=>{
+    try {
+        const userDoctor  = req.params.userDoctor;
+        const value = await dementiaData.find({ diagnostic: "Never Tested", userdoctor : userDoctor}, {sort : {_id : -1}})
+        res.json(value)
+    } catch (error) {
+        next(error)
+    }
+})
+
 router.get('/:userID',verify, async(req, res, next)=>{
     try {
         const { userID }= req.params;
@@ -119,12 +131,31 @@ router.get('/username/:userAlias',verify, async(req, res, next)=>{
 router.post('/',verify,async (req, res, next)=>{
    try {
     const value = await schema.validateAsync(req.body);
+    
     const inserted = await dementiaData.insert(value)
     res.json({
         response : "success",
         message : inserted
     })
     kafkaStreaming(inserted._id.toString())
+    if (inserted.diagnostic === "Never Tested"){
+        var dataTest = {
+            "dementiaID" : inserted._id.toString(),
+            "1" : "null",
+            "2" : "null",
+            "3" : "null",
+            "4" : "null",
+            "5" : "null",
+            "6" : "null",
+            "7" : "null",
+            "8" : "null",
+            "9" : "null",
+            "10" : "null",
+            "11" : "null",
+        }
+        const insertTest = await dementiaMSEEAnswer.insert(dataTest)
+        
+    }
    } catch (error) {
     next(error)
    }
