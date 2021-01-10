@@ -7,6 +7,9 @@ const Joi = require('@hapi/joi')
 const { join } = require('path')
 const { error, time } = require('console')
 const { set } = require('../app/app')
+const { Kafka } = require("kafkajs");
+const sio = require("../rest")
+const elastic = require('../app/elasticconnect')
 
 
 
@@ -14,6 +17,17 @@ const router = express.Router()
 const dementiaMSEEAnswer = db.get('dementiaAnswerMSEE')
 const dementiaData = db.get('dementiaData')
 
+var indexData = async function (data, id) {
+    delete data._id
+    elastic.index({  
+        index: 'dementia_index',
+        id: id.toString(),
+        type : '_doc',
+        body: data
+      },function(err,resp,status) {
+          console.log(resp);
+      });
+} 
 
 
 
@@ -118,14 +132,19 @@ router.put('/:dementiaID/11',verify,async(req, res, next)=>{
         }else{
             diagnostic = "Severe Dementia"
         }
+
+        
         
         
         findUser.diagnostic = diagnostic
        
         const updateUser = await dementiaData.update({_id : dementiaID}, { $set : findUser})
-        
+        if(diagnostic == "Mild Dementia" || diagnostic == "Severe Dementia"){
+            kafkaStreaming(findUser._id.toString())
+        }
         res.json(findUser)
         
+        indexData(findUser, dementiaID)
         
         
     } catch (error) {
@@ -133,6 +152,25 @@ router.put('/:dementiaID/11',verify,async(req, res, next)=>{
     }
 })
 
+const kafka = new Kafka({
+    clientId: "my-app",
+    brokers: [ "192.168.1.36:9092"],
+  });
+  
+const kafkaStreaming = async(dementiaID)=>{
+    
+    var consumer_image = kafka.consumer({ groupId: "streaming-group-"+dementiaID });
+    await consumer_image.connect();
+    await consumer_image.subscribe({ topic: "streaming.image."+dementiaID, fromBeginning: false });
+    await consumer_image.run({
+        eachMessage: async ({ topic, partition, message }) => {
+        if(topic === "streaming.image."+dementiaID){
+                sio.soket(dementiaID.toString(),message.value.toString())
+   
+            }
+        }
+      });
+}
 // router.delete('/:userID',verify,async (req, res, next)=>{
 //     try {
 //         const {userID} = req.params

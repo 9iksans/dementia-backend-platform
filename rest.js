@@ -29,7 +29,7 @@ const dementiaData = db.get('dementiaData')
 var dataUser, dataLeng
 var getDatabase=  async function(){
     try {
-        var value = await dementiaData.find({diagnostic : "Dementia"}, {sort : {_id : -1}})
+        var value = await dementiaData.find({ $or : [{diagnostic : "Dementia"}, {diagnostic : "Mild Dementia"}, {diagnostic : "Severe Dementia"}]}, {sort : {_id : -1}})
         dataUser = value
         dataLeng = value.length
         return createKafka()
