@@ -1,6 +1,7 @@
 const express = require('express')
 const db = require('../app/dbconnect')
 const bodyParser = require('body-parser')
+const multer = require('multer')
 const verify = require('./verifyToken')
 const Joi = require('@hapi/joi')
 const { join } = require('path')
@@ -18,7 +19,38 @@ const schema = Joi.object({
     diagnostic : Joi.string().trim().required()
 })
 
+const editProfile = Joi.object({
+    name: Joi.string().trim().required(),
+    username: Joi.string().trim().required(),
+    email : Joi.string().trim().required(),
+    password: Joi.string().required().trim(),
+    profile: Joi.string().trim().optional(),
+})
 
+const diskStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, "../profileimage"))
+    },
+    filename: function (req, file, cb) {
+        cb(
+            null,
+            file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+        )
+    }
+})
+
+var upload = multer({ storage: diskStorage })
+
+router.post('/uploadfile', upload.single('dementiaPhotos'), (req, res, next) => {
+    const file = req.file
+    if (!file) {
+        const error = new Error('Please upload a file')
+        error.httpStatusCode = 400
+        return next(error)
+    }
+    res.send(file.filename)
+
+})
 
 //get
 router.get('/', verify, async(req, res, next)=>{
@@ -74,13 +106,13 @@ router.post('/', verify,async (req, res, next)=>{
 
 router.put('/:userID',  verify,async(req, res, next)=>{
     try {
-        const value = await schema.validateAsync(req.body)
+        const value = await editProfile.validateAsync(req.body)
         
-        const { userID } = req.params
-        const findUser = await userData.findOne({_id : userID})
+        const userID = req.params.userID
+        const findUser = await userData.findOne({username : userID})
         if(!findUser) return next()
 
-        const update = await userData.update({_id : userID}, { $set : value})
+        const update = await userData.update({username : userID}, { $set : value})
         res.json(update)
         
     } catch (error) {

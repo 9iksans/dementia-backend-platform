@@ -21,9 +21,10 @@ const jwtGenerator = db.get('jwtGenerator')
 
 //scheme for post dataUser
 const schemaRegister = Joi.object({
-    username: Joi.string().trim().required(),
-    password: Joi.string().required().trim(),
     name: Joi.string().trim().required(),
+    username: Joi.string().trim().required(),
+    email : Joi.string().trim().required(),
+    password: Joi.string().required().trim(),
     profile: Joi.string().trim().optional(),
 })
 
@@ -33,7 +34,39 @@ const schemaLogin = Joi.object({
     
 })
 
+router.get('/getusername/:username', async (req, res, next)=>{
+    const usernameExist = await userData.findOne({
+        username: req.params.username
+    })
+    if (usernameExist) {
+        return res.status(200).json({
+        status: "error",
+        message: "username already exist"
+         })
+    }else{
+        return res.status(400).json({
+            status: "yeah",
+            message: "username not exist"
+        })
+    }
+})
+router.get('/getemail/:email', async (req, res, next)=>{
+    const emailExist = await userData.findOne({
+        email: req.params.email
+    })
 
+    if (emailExist) {
+        return res.status(200).json({
+        status: "error",
+        message: "username already exist"
+         })
+    }else{
+        return res.status(400).json({
+            status: "yeah",
+            message: "email not exist"
+        })
+    }
+})
 
 //post
 router.post('/register', async (req, res, next) => {
@@ -46,6 +79,15 @@ router.post('/register', async (req, res, next) => {
         if (usernameExist) return res.status(400).json({
             status: "error",
             message: "username already exist"
+        })
+        
+        const emailExist = await userData.findOne({
+            email: req.body.email
+        })
+
+        if (emailExist) return res.status(400).json({
+            status: "error",
+            message: "email already exist"
         })
 
 
