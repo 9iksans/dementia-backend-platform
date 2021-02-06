@@ -42,7 +42,8 @@ var upload = multer({ storage: diskStorage })
 //scheme for post dataUser
 const schema = Joi.object({
     name: Joi.string().trim().required(),
-    age: Joi.number().required(),
+    age: Joi.number().optional(),
+    born : Joi.string().trim().required(),
     gender: Joi.string().trim().required(),
     diagnostic: Joi.string().trim().required(),
     urgent: Joi.string().trim().optional(),

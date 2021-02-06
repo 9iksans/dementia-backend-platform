@@ -7,7 +7,7 @@ const Joi = require('@hapi/joi')
 const { join } = require('path')
 const { error } = require('console')
 const { set } = require('../app/app')
-
+const md5 = require('md5')
 const router = express.Router()
 const userData = db.get('userData')
 
@@ -25,6 +25,12 @@ const editProfile = Joi.object({
     email : Joi.string().trim().required(),
     password: Joi.string().required().trim(),
     profile: Joi.string().trim().optional(),
+})
+
+const changePassword = Joi.object({
+    password: Joi.string().trim().required(),
+    oldpassword: Joi.string().trim().required(),
+    
 })
 
 const diskStorage = multer.diskStorage({
@@ -102,6 +108,29 @@ router.post('/', verify,async (req, res, next)=>{
     next(error)
    }
 })
+
+router.post('/changepw/:userID', verify,async (req, res, next)=>{
+    try {
+    const userID = req.params.userID
+     const value = await changePassword.validateAsync(req.body);
+     const findUser = await userData.findOne({username : userID})
+     if(!findUser) return next()
+
+     if(findUser.password != md5(value.oldpassword)) return res.status(400).json({
+        status: "error",
+        message: "Password wrong"
+     })
+     findUser.password = md5(value.password)
+     const update = await userData.update({ username: userID }, { $set: findUser })
+   
+     res.json({
+         response : "success",
+         message : findUser
+     })
+    } catch (error) {
+     next(error)
+    }
+ })
 
 
 router.put('/:userID',  verify,async(req, res, next)=>{
