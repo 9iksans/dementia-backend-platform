@@ -17,9 +17,9 @@ client.on('connect', function(){
 
     client.publish('/action/image',JSON.stringify(pubs), {qos:1});
     client.publish('/action/imrecog/5f8f2dd0c00456e8e03e5e9c',"Standing", {qos:1});
-    const timepub = new Date()
-    timepub.setHours( timepub.getHours() + 7 );
-    console.log(timepub.toISOString())
+    // const timepub = new Date()
+    // timepub.setHours( timepub.getHours() + 7 );
+    // console.log(timepub.toISOString())
     console.log("success");
 
 
